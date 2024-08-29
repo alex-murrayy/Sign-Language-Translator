@@ -13,32 +13,14 @@ mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 chosen_hand = "Right"
 
-# Initialize Video Capture
-cap = cv2.VideoCapture(1)
+# Tracks previous state of each letter to update when changed
+prev_state_A = False
 
-def recognize_gesture(hand_landmarks, image):
-    h, w, c = image.shape
-    wrist = hand_landmarks.landmark[mp_hands.HandLandmark.WRIST]
-    thumb_cmc = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_CMC]
-    thumb_mcp = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_MCP]
-    thumb_ip = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_IP]
-    thumb_tip = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
-    index_mcp = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_MCP]
-    index_pip = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_PIP]
-    index_dip = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_DIP]
-    index_tip = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
-    middle_mcp = hand_landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_MCP]
-    middle_pip = hand_landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_PIP]
-    middle_dip = hand_landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_DIP]
-    middle_tip = hand_landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_TIP]
-    ring_mcp = hand_landmarks.landmark[mp_hands.HandLandmark.RING_FINGER_MCP]
-    ring_pip = hand_landmarks.landmark[mp_hands.HandLandmark.RING_FINGER_PIP]
-    ring_dip = hand_landmarks.landmark[mp_hands.HandLandmark.RING_FINGER_DIP]
-    ring_tip = hand_landmarks.landmark[mp_hands.HandLandmark.RING_FINGER_TIP]
-    pinky_mcp = hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_MCP]
-    pinky_pip = hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_PIP]
-    pinky_dip = hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_DIP]
-    pinky_tip = hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_TIP]
+# keeps trakc of the whole word
+word = ""
+
+# Initialize Video Capture
+cap = cv2.VideoCapture(0)
 
 with mp_hands.Hands(
         min_detection_confidence=0.7,
@@ -84,6 +66,7 @@ with mp_hands.Hands(
                         end_point = (int(end.x * w), int(end.y * h))
                         cv2.line(image, start_point, end_point, (0, 0, 0), 2)
 
+                    # Recognizes the points on the hands 
                     h, w, c = image.shape
                     wrist = hand_landmarks.landmark[mp_hands.HandLandmark.WRIST]
                     thumb_cmc = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_CMC]
@@ -108,15 +91,26 @@ with mp_hands.Hands(
                     pinky_tip = hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_TIP]
         
                     translator = Translator.Translator(wrist, thumb_cmc, thumb_mcp, thumb_ip, thumb_tip, index_mcp, index_pip, index_dip, index_tip, middle_mcp, middle_pip, middle_dip, middle_tip, ring_mcp, ring_pip, ring_dip, ring_tip, pinky_mcp, pinky_pip, pinky_dip, pinky_tip)             
-                                
-                    letter = ""            
 
-                    if translator.isA() == True: 
-                        letter = "A"
+                    current_state_A = translator.isA()
+
+                    # letter = ""
+
+                    if current_state_A and not prev_state_A: 
+                         letter += "A"
+
+                    prev_state_A = current_state_A
+                    
+                    cv2.waitKey(1)
+                    # letter = ""            
+
+                    # if translator.isA() == True: 
+                    #     cv2.waitKey(1) 
+                    #     letter += "A"
 
                     #print("index tip" + str(index_tip))
 
-                    cv2.putText(image, letter, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 200, 0), 2, cv2.LINE_AA)
+            cv2.putText(image, word, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 200, 0), 2, cv2.LINE_AA)
         
         # Display the image
         cv2.imshow('Hand Tracking', image)
