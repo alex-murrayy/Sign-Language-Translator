@@ -114,8 +114,10 @@ with mp_hands.Hands(
                     if translator.isA() == True: 
                         letter = "A"
 
-                    cv2.putText(image, letter, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 200, 0), 2, cv2.LINE_AA)
+                    #print("index tip" + str(index_tip))
 
+                    cv2.putText(image, letter, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 200, 0), 2, cv2.LINE_AA)
+        
         # Display the image
         cv2.imshow('Hand Tracking', image)
 
