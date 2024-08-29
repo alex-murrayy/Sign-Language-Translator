@@ -97,7 +97,7 @@ with mp_hands.Hands(
                     # letter = ""
 
                     if current_state_A and not prev_state_A: 
-                         letter += "A"
+                        word += "A"
 
                     prev_state_A = current_state_A
                     
