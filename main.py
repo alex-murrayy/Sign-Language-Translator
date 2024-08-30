@@ -14,13 +14,15 @@ mp_drawing = mp.solutions.drawing_utils
 chosen_hand = "Right"
 
 # Tracks previous state of each letter to update when changed
+prev_state_Space = False
+prev_state_Delete = False 
 prev_state_A = False
 
-# keeps trakc of the whole word
+# Initialize Word
 word = ""
 
 # Initialize Video Capture
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 with mp_hands.Hands(
         min_detection_confidence=0.7,
@@ -92,23 +94,33 @@ with mp_hands.Hands(
         
                     translator = Translator.Translator(wrist, thumb_cmc, thumb_mcp, thumb_ip, thumb_tip, index_mcp, index_pip, index_dip, index_tip, middle_mcp, middle_pip, middle_dip, middle_tip, ring_mcp, ring_pip, ring_dip, ring_tip, pinky_mcp, pinky_pip, pinky_dip, pinky_tip)             
 
-                    current_state_A = translator.isA()
+                    # Space Implimentation 
+                    current_state_space = translator.isSpace()
+                    if current_state_space and not prev_state_Space:
+                        word += " "
+                    
+                    prev_state_Space = current_state_space
 
-                    # letter = ""
+                    # Delete Implimentation 
+                    current_state_delete = translator.isDelete()
+                    if current_state_delete and not prev_state_Delete:
+                        word = ""
+                    
+                    prev_state_Delete = current_state_delete
+
+                    # A Implimentation 
+                    current_state_A = translator.isA()
 
                     if current_state_A and not prev_state_A: 
                         word += "A"
 
                     prev_state_A = current_state_A
                     
-                    cv2.waitKey(1)
-                    # letter = ""            
+                    cv2.waitKey(50)
 
-                    # if translator.isA() == True: 
-                    #     cv2.waitKey(1) 
-                    #     letter += "A"
-
-                    #print("index tip" + str(index_tip))
+                    # B Implimentation 
+                    current_state_B = 0 
+                    
 
             cv2.putText(image, word, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 200, 0), 2, cv2.LINE_AA)
         
