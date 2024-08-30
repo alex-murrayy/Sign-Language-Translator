@@ -48,7 +48,8 @@ class Translator:
            and self.ring_tip.y > self.ring_dip.y and self.ring_tip.y > self.ring_pip.y
            and self.pinky_tip.y > self.pinky_dip.y and self.pinky_tip.y > self.pinky_pip.y
            and self.thumb_tip.y < self.index_dip.y and self.thumb_tip.y < self.middle_dip.y 
-           and self.thumb_tip.y < self.ring_dip.y and self.thumb_tip.y < self.pinky_dip.y):
+           and self.thumb_tip.y < self.ring_dip.y and self.thumb_tip.y < self.pinky_dip.y
+           and abs(self.thumb_tip.x - self.index_pip.x) < 0.05):
            return True
        
        return False 
